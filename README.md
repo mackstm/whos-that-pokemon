@@ -5,6 +5,7 @@
 ## Índice
 - [Descripción](#index01)
 - [Reto 1](#index02)
+- [Reto 2](#index03)
 
 ### Descripción <a name="index01"></a>
 
@@ -59,5 +60,38 @@ Finalmente, vamos a aplicarle Tailwind CSS:
 <img src="img/reto1/img11.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
 
 Y con esto ya completamos el reto 1!
+
+### Reto 2: Estructura de la aplicación <a name="index03"></a>
+
+Ahora que lo tenemos inicializado, vamos a estructurar nuestro proyecto para seguir la arquitectura screaming architecture que mencionamos anteriormente. Borramos la carpeta components y creamos en su lugar modules, y dentro de ella pokemon.
+
+A su vez, creamos una carpeta composables. Los composables son el equivalente a los hooks de react, nos permiten reutilizar lógica que normalmente necesitaríamos escribir en cada componente. De manera estándar, llamamos al fichero algo significativo como "mouse" y dentro crearíamos una función "useMouse".
+
+Por último, recreamos components y agregamos una carpeta views. La estructura nos quedaría así:
+
+<img src="img/reto2/img01.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Ahora en views generamos el archivo PokemonGame.vue. Gracias a nuestra estructura screaming architecture, tenemos claro que tendrá lógica relazionada con la visualización de nuestra aplicación. Ahora, con la extensión de Vue VScode Snippets escribimos en el fichero:
+
+```vue
+vbase-3-ts-setup
+```
+
+Y nos genera la estructura básica de un componente usando Composition API y typescript.
+
+<img src="img/reto2/img02.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Ahora dividimos la estructura de PokemonGame en secciones. Primero una sección que indique al usuario que se están cargando los Pokémons:
+
+<img src="img/reto2/img03.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Las clases de tailwind añadidas básicamente ayudan a centrar y el texto y que la sección ocupe la pantalla, y animate-pulse realiza una animación de transparencia y opacidad constante. Ahora modificamos App.vue para llamar al componente.
+
+<img src="img/reto2/img04.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Ahora vemos el resultado:
+
+<img src="img/reto2/img05.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
 
 </div>
