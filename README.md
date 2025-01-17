@@ -93,5 +93,27 @@ Ahora vemos el resultado:
 
 <img src="img/reto2/img05.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
 
+Si quisiéramos ocultarlo podríamos hacerlo con la directiva v-show sobre la etiqueta section, poniendo su valor a false:
+
+```html
+<section v-show="false" class="flex flex-col justify-center items-center w-screen h-screen">
+    <h1 class="text-3xl">Espere por favor</h1>
+    <h3 class="animate-pulse">Cargando Pokémons</h3>
+</section>
+```
+
+Ahora otra sección con el mensaje de "¿Cuál es ese Pokémon?":
+
+```html
+  <section class="flex flex-col justify-center items-center w-screen h-screen">
+    <h1>¿Cuál es ese Pokémon?</h1>
+    <!--PokemonPicture-->
+    <!--PokemonOptions-->
+  </section>
+```
+
+Los comentarios de PokemonPicture y PokemonOptions indican donde irán dichos componentes. Como su nombre indica, PokémonPicture es el componente que muestra la imagen del Pokémon, cogiéndola de la API. PokemonOptions se encargará de mostrar los botones con las elecciones, consultando con la API para conseguir tres Pokémon aleatorios y el correcto.
+
+Con esto hemos acabado el segundo reto.
 
 </div>
