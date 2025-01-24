@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body {
+  background-color: #f1f1f1;
+}
+
 #app {
   max-width: 1280px;
   margin: 0 auto;

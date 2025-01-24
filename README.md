@@ -176,23 +176,41 @@ Las opciones se ven un poco aburridas. Vamos a convertirlas en botones con las s
 <button class="bg-purple-600 hover:bg-purple-700 mb-2 p-2 w-[150px] text-white rounded-full">Option {{ item }}</button>
 ```
 
-<img src="img/reto3/img04.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
-
-Finalmente, para poner nuestro color de fondo a #f1f1f1, usaremos la clase tailwind bg-[#f1f1f1]:
+En lugar de poner el class directamente sobre el botón, podemos limpiar bastante nuestro código HTML con @apply en el apartado de estilos:
 
 ```html
-<section class="flex flex-col justify-center items-center w-screen h-screen bg-[#f1f1f1]">
-    <h1 class="text-3xl">Espere por favor</h1>
-    <h3 class="animate-pulse">Cargando Pokémons</h3>
-  </section>
-  <section class="flex flex-col justify-center items-center w-screen h-screen bg-[#f1f1f1]">
-    <h1>¿Cuál es ese Pokémon?</h1>
+<template>
+  <div v-for="item in options">
+    <button>Option {{ item }}</button>
+  </div>
+</template>
 
-    <PokemonPicture/>
+<script setup lang="ts">
+  import { ref } from 'vue';
 
-    <PokemonOptions/>
+  const options = ref([1,2,3,4]);
+</script>
 
-  </section>
+<style scoped>
+
+  button {
+    @apply bg-purple-600 hover:bg-purple-700 mb-2 p-2 w-[150px] text-white rounded-full
+  }
+
+</style>
+
+
+```
+
+<img src="img/reto3/img04.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Finalmente, para poner nuestro color de fondo a #f1f1f1, vamos a nuestro styles.css y agregamos:
+
+```css
+html,
+body {
+  background-color: #f1f1f1;
+}
 ```
 
 <img src="img/reto3/img05.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>

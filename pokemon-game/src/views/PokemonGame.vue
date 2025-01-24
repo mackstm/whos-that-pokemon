@@ -1,9 +1,9 @@
 <template>
-  <section class="flex flex-col justify-center items-center w-screen h-screen bg-[#f1f1f1]">
+  <section>
     <h1 class="text-3xl">Espere por favor</h1>
     <h3 class="animate-pulse">Cargando Pokémons</h3>
   </section>
-  <section class="flex flex-col justify-center items-center w-screen h-screen bg-[#f1f1f1]">
+  <section>
     <h1>¿Cuál es ese Pokémon?</h1>
 
     <PokemonPicture/>
@@ -19,5 +19,9 @@ import PokemonPicture from '@/components/PokemonPicture.vue';
 </script>
 
 <style scoped>
+
+section {
+  @apply flex flex-col justify-center items-center w-screen h-screen
+}
 
 </style>
