@@ -2,10 +2,13 @@
 
 # Who's that Pokémon?
 
+<img src="img/misc/whosthatpokemon.png" alt="Who's that Pokémon?" style="display: block; margin: 0 auto"/>
+
 ## Índice
 - [Descripción](#index01)
 - [Reto 1](#index02)
 - [Reto 2](#index03)
+- [Reto 3](#index04)
 
 ### Descripción <a name="index01"></a>
 
@@ -115,5 +118,85 @@ Ahora otra sección con el mensaje de "¿Cuál es ese Pokémon?":
 Los comentarios de PokemonPicture y PokemonOptions indican donde irán dichos componentes. Como su nombre indica, PokémonPicture es el componente que muestra la imagen del Pokémon, cogiéndola de la API. PokemonOptions se encargará de mostrar los botones con las elecciones, consultando con la API para conseguir tres Pokémon aleatorios y el correcto.
 
 Con esto hemos acabado el segundo reto.
+
+### Reto 3: Creando el esqueleto de Pokémon Game <a name="index04"></a>
+
+Ahora que hemos dado estructura a nuestro proyecto, podemos empezar a generar un pequeño esqueleto de lo que acabará siendo nuestra aplicación. Aún no vamos a conectar con la API, así que cogeremos una imagen de Volcarona para este ejemplo.
+
+<img src="img/reto3/img01.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Esto es un buen comienzo, pero si vemos la imagen del Pokémon tal cual el juego pierde su gracia. Vamos a usar tailwind para ponerla en negro y darle un tamaño uniforme de 200 pixeles, quedando el código tal que así:
+
+```html
+<template>
+
+  <img v-bind:src="imgUrl" class="brightness-0 h-[200px]" alt="Volcarona"/>
+
+</template>
+
+<script setup lang="ts">
+  import { ref } from 'vue';
+
+  const imgUrl = ref('https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/637.png');
+
+</script>
+
+<style scoped>
+
+</style>
+```
+
+<img src="img/reto3/img02.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Ahora que no sé qué Pokémon es, pasemos al componente PokemonOptions. Para este reto solamente vamos a simular las opciones.
+
+<img src="img/reto3/img03.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+```html
+<template>
+  <div v-for="item in options">
+    <div>Option {{ item }}</div>
+  </div>
+</template>
+
+<script setup lang="ts">
+  import { ref } from 'vue';
+
+  const options = ref([1,2,3,4]);
+</script>
+
+<style scoped>
+
+</style>
+```
+
+Las opciones se ven un poco aburridas. Vamos a convertirlas en botones con las siguientes clases tailwind:
+
+```html
+<button class="bg-purple-600 hover:bg-purple-700 mb-2 p-2 w-[150px] text-white rounded-full">Option {{ item }}</button>
+```
+
+<img src="img/reto3/img04.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Finalmente, para poner nuestro color de fondo a #f1f1f1, usaremos la clase tailwind bg-[#f1f1f1]:
+
+```html
+<section class="flex flex-col justify-center items-center w-screen h-screen bg-[#f1f1f1]">
+    <h1 class="text-3xl">Espere por favor</h1>
+    <h3 class="animate-pulse">Cargando Pokémons</h3>
+  </section>
+  <section class="flex flex-col justify-center items-center w-screen h-screen bg-[#f1f1f1]">
+    <h1>¿Cuál es ese Pokémon?</h1>
+
+    <PokemonPicture/>
+
+    <PokemonOptions/>
+
+  </section>
+```
+
+<img src="img/reto3/img05.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Reto 3 completado!
 
 </div>

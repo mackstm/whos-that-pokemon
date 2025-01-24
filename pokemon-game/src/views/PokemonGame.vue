@@ -1,19 +1,21 @@
 <template>
-  <section class="flex flex-col justify-center items-center w-screen h-screen">
+  <section class="flex flex-col justify-center items-center w-screen h-screen bg-[#f1f1f1]">
     <h1 class="text-3xl">Espere por favor</h1>
     <h3 class="animate-pulse">Cargando Pokémons</h3>
   </section>
-  <section class="flex flex-col justify-center items-center w-screen h-screen">
+  <section class="flex flex-col justify-center items-center w-screen h-screen bg-[#f1f1f1]">
     <h1>¿Cuál es ese Pokémon?</h1>
 
-    <!--PokemonPicture-->
+    <PokemonPicture/>
 
-    <!--PokemonOptions-->
+    <PokemonOptions/>
+
   </section>
 </template>
 
 <script setup lang="ts">
-
+import PokemonOptions from '@/components/PokemonOptions.vue';
+import PokemonPicture from '@/components/PokemonPicture.vue';
 </script>
 
 <style scoped>
