@@ -9,6 +9,7 @@
 - [Reto 1](#index02)
 - [Reto 2](#index03)
 - [Reto 3](#index04)
+- [Reto 4](#index05)
 
 ### Descripción <a name="index01"></a>
 
@@ -216,5 +217,59 @@ body {
 <img src="img/reto3/img05.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
 
 Reto 3 completado!
+
+### Reto 4: Conectar con la API usando Axios <a name="index05"></a>
+
+Por fin vamos a utilizar la PokeApi!
+
+Antes de hacer nada, creamos un archivo en assets llamado "animations.css" con el siguiente código:
+
+```css
+.fade-in {
+    animation: fadeIn 0.3s;
+    -webkit-animation: fadeIn 0.3s;
+    -moz-animation: fadeIn 0.3s;
+    -o-animation: fadeIn 0.3s;
+    -ms-animation: fadeIn 0.3s;
+  }
+  @keyframes fadeIn {
+    0% {opacity:0;}
+    100% {opacity:1;}
+  }
+  
+  @-moz-keyframes fadeIn {
+    0% {opacity:0;}
+    100% {opacity:1;}
+  }
+  
+  @-webkit-keyframes fadeIn {
+    0% {opacity:0;}
+    100% {opacity:1;}
+  }
+  
+  @-o-keyframes fadeIn {
+    0% {opacity:0;}
+    100% {opacity:1;}
+  }
+  
+  @-ms-keyframes fadeIn {
+    0% {opacity:0;}
+    100% {opacity:1;}
+  }
+```
+
+Se trata de una simple animación que se verá cuando cargue el Pokémon. Lo siguiente será crear nuestro primer composable: usePokemonGame. También crearemos un enum con los tres estados de nuestro juego, el cual se encontrará en la carpeta interfaces en pokemon. Cabe mencionar que no es una interfaz como tal.
+
+Como ya se ha mencionado, el juego tendrá tres estados: 
+
+```ts
+export enum GameStatus {
+  Playing = 'playing',
+  Won = 'won',
+  Lost = 'lost',
+}
+```
+
+
 
 </div>
