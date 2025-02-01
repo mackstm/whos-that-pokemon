@@ -11,6 +11,7 @@
 - [Reto 3](#index04)
 - [Reto 4](#index05)
 - [Reto 5](#index06)
+- [Reto 6](#index07)
 
 ### Descripción <a name="index01"></a>
 
@@ -64,7 +65,7 @@ Finalmente, vamos a aplicarle Tailwind CSS:
 
 <img src="img/reto1/img11.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
 
-Y con esto ya completamos el reto 1!
+¡Y con esto ya completamos el reto 1!
 
 ### Reto 2: Estructura de la aplicación <a name="index03"></a>
 
@@ -217,11 +218,11 @@ body {
 
 <img src="img/reto3/img05.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
 
-Reto 3 completado!
+¡Reto 3 completado!
 
 ### Reto 4: Conectar con la API usando Axios <a name="index05"></a>
 
-Por fin vamos a utilizar la PokeApi!
+¡Por fin vamos a utilizar la PokeApi!
 
 Antes de hacer nada, creamos un archivo en assets llamado "animations.css" con el siguiente código:
 
@@ -414,7 +415,7 @@ export function usePokemonGame() {
 
 ¿Creen que la silueta de antes es uno de esos Pokémon de la imagen? Si tan solo supiera.
 
-Reto 4 completado!
+¡Reto 4 completado!
 
 ### Reto 5: Modificando método getPokemon() <a name="index06"></a>
 
@@ -485,5 +486,494 @@ Ahora comprobemos si es aleatorio:
 <img src="img/reto5/img02.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
 
 Efectivamente.
+
+### Reto 6: Se acerca el fin <a name="index07"></a>
+
+Todo va bien, pero hay un problema: axios no siempre obtiene una respuesta inmediata. Por tanto, necesitamos una propiedad computada que se usará cuando mientras nuestra página se esté cargando. Una propiedad computada nos permite ver siempre de forma dinámica los cambios que se produzcan en nuestras propiedades, y nos ahorra tener que estar haciendo el check desde el propio template.
+
+```ts
+export function usePokemonGame() {
+  const gameStatus = ref<GameStatus>(GameStatus.Playing);
+  const pokemonList = ref<Pokemon[]>([]);
+
+  const isLoading = computed(() => pokemonList.value.length === 0);
+```
+
+Nos aseguramos también de devolverla:
+
+```ts
+return {
+  gameStatus,
+  isLoading,
+}
+```
+
+Ahora viene la mejor parte de usar nuestra propiedad computada. En PokémonGame hacemos simplemente:
+
+```html
+<template>
+  <section v-if="isLoading">
+    <h1 class="text-3xl">Espere por favor</h1>
+    <h3 class="animate-pulse">Cargando Pokémons</h3>
+  </section>
+  <section v-else>
+    <h1>¿Cuál es ese Pokémon?</h1>
+
+    <PokemonPicture/>
+
+    <PokemonOptions/>
+
+  </section>
+</template>
+```
+
+Vamos a cambiar tambien el onMounted para que la diferencia sea perceptible:
+
+```ts
+  onMounted(async () => {
+    setTimeout(async () => {
+      pokemonList.value = await getPokemon();
+    }, 1000)
+
+  })
+```
+
+Pero ahora lo cambiamos a como estaba antes porque cuanto más inmediata la carga mejor.
+
+Necesitamos implementar las opciones, así que vamos allá. Necesitamos una nueva propiedad reactiva:
+
+```ts
+const pokemonOptions = ref<Pokemon[]>([]);
+```
+
+Y una nueva función para poder manejarlas:
+
+```ts
+const getNextOptions = (amount: number = 4) => {
+    gameStatus.value = GameStatus.Playing;
+    pokemonOptions.value = pokemonList.value.slice(0, amount);
+    pokemonList.value = pokemonList.value.slice(amount);
+    console.log(pokemonOptions.value);
+  }
+
+  onMounted(async () => {
+    pokemonList.value = await getPokemon();
+    getNextOptions();
+  })
+
+  return {
+    gameStatus,
+    isLoading,
+    pokemonOptions,
+    getNextOptions
+  }
+```
+
+La función getNextOptions nos asegura que el estado esté en Playing y que las opciones sean los n primeros (por defecto 4) pokémon de la lista. Por último, decrementa la lista completa.
+
+<img src="img/reto6/img01.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+¿Será la silueta uno de esos 4? Siento que estoy olvidando algo importante.
+
+En fin, necesitamos implementar la lógica para determinar el Pokémon correcto. Propiedad computada al rescate:
+
+```ts
+const randomPokemon = computed(() => {
+    const randomIndex = Math.floor(Math.random() * pokemonOptions.value.length);
+    return pokemonOptions.value[randomIndex];
+})
+```
+
+Con esto aseguramos que un elemento aleatorio de las opciones sea el Pokémon correcto. Vamos a comprobarlo en nuestro componente.
+
+<img src="img/reto6/img02.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Funciona, pero tampoco creo que sea Krookodile. Ah, espera, ¡no hemos vinculado la imagen con la del Pokémon correspondiente! Hagámoslo.
+
+Primero pasamos la ID del Pokémon a nuestro componente PokemonPicture:
+
+```html
+<PokemonPicture :pokemonId="randomPokemon.id"/>
+```
+
+Y modificamos dicho componente para que cargue la imagen que corresponde:
+
+```html
+<template>
+
+  <img v-bind:src="pkmnImage" class="brightness-0 h-[200px]" alt="pokemon"/>
+
+</template>
+
+<script setup lang="ts">
+  interface Props {
+    pokemonId: number
+  }
+  const props = defineProps<Props>();
+
+  import { computed, ref } from 'vue';
+
+  const pkmnImage = computed(() =>
+    `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${props.pokemonId}.png`
+  );
+
+</script>
+```
+
+<img src="img/reto6/img03.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Ahora nunca sabré lo que era. ¡Pero ahí tenemos a Krookodile! Creo.
+
+Necesitamos una forma de mostrar la imagen completa al elegir la opción correcta. Lo solucionamos con otro prop:
+
+```html
+<PokemonPicture :pokemonId="randomPokemon.id" :showPokemon="true"/>
+```
+
+Lo ponemos por defecto a true para comprobarlo
+
+Ahora en PokemonPicture:
+
+```html
+<template>
+
+  <img v-if="!showPokemon" v-bind:src="pkmnImage" class="brightness-0 h-[200px]" alt="pokemon"/>
+
+  <img v-else v-bind:src="pkmnImage" class="fade-in h-[200px]" alt="pokemon"/>
+
+</template>
+
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+  interface Props {
+    pokemonId: number;
+    showPokemon?: boolean;
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    showPokemon: false
+  });
+
+  const pkmnImage = computed(() =>
+    `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${props.pokemonId}.png`
+  );
+
+</script>
+
+```
+
+Le aplicamos desde ya la clase fade-in que tenemos de animations.css
+
+<img src="img/reto6/img04.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+¡Es Serperior!
+
+Bueno, ahora que comprobamos que funciona, agregamos una condición de que solo se muestre cuando no se esté jugando:
+
+```html
+<PokemonPicture :pokemonId="randomPokemon.id" :showPokemon="gameStatus !== GameStatus.Playing"/>
+```
+
+Vamos con las opciones. Pasamos a PokemonOptions por props el array de opciones:
+
+```html
+<PokemonOptions :options="pokemonOptions"/>
+```
+
+Y empezamos a modificar PokemonOptions:
+
+```html
+<template>
+
+    <button v-for="{ name, id } in options" :key="id" class="capitalize">
+      {{ name }}
+    </button>
+</template>
+
+<script setup lang="ts">
+import type { Pokemon } from '@/modules/pokemon/interfaces';
+
+interface Props {
+  options: Pokemon[]
+}
+
+const props = defineProps<Props>();
+
+</script>
+
+<style scoped>
+
+  button {
+    @apply bg-purple-600 hover:bg-purple-700 mb-2 p-2 w-[150px] text-white rounded-full
+  }
+
+</style>
+
+```
+
+Hasta ahora, el componente recibe a través de props las opciones (las cuales ya están en orden aleatorio) y las recorre en los botones con v-for, mostrando el nombre de cada uno en el botón.
+
+Necesitamos saber la opción que selecciona el usuario. Para ello utilizaremos defineEmits en PokemonOptions:
+
+```ts
+defineEmits<{selectedOption: [id: number]}>();
+```
+
+Y en el template:
+
+```html
+<button v-for="{ name, id } in options" :key="id" class="capitalize"
+    @click="$emit('selectedOption', id)"
+>
+      {{ name }}
+</button>
+```
+
+Y para recibirlo en PokemonGame:
+
+```html
+<PokemonOptions :options="pokemonOptions" @selected-option="onSelectedOption"/>
+```
+
+Y comprobamos mostrando por consola con esa función onSelectedOption:
+
+```ts
+const onSelectedOption = (pokemonId: number) => {
+  console.log(pokemonId);
+}
+```
+
+
+<img src="img/reto6/img05.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Desarrollemos esa función con la lógica de ganar. Creamos una nueva función checkAnswer en usePokemonGame que recibe el id y lo compara con la respuesta. Si el usuario gana, nuestro gameStatus cambia a WON, y si no, a LOST:
+
+```ts
+const checkAnswer = (pokemonId: number) => {
+    if (pokemonId === randomPokemon.value.id) {
+      gameStatus.value = GameStatus.Won;
+    } else {
+      gameStatus.value = GameStatus.Lost;
+    }
+  }
+```
+
+Perfecto, pero esto no es muy divertido. ¡Vamos a lanzar confeti cuando el usuario gane!
+
+Instalamos el paquete:
+
+```bash
+npm install --save canvas-confetti
+```
+
+<img src="img/reto6/img06.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Ahora podemos lanzarlo cuando el usuario gane:
+
+```ts
+const checkAnswer = (pokemonId: number) => {
+    if (pokemonId === randomPokemon.value.id) {
+      gameStatus.value = GameStatus.Won;
+      confetti({
+        particleCount: 300,
+        spread: 150,
+        origin: { y: 0.6 }
+      });
+    } else {
+      gameStatus.value = GameStatus.Lost;
+    }
+  }
+```
+
+Y ahora al seleccionar lanzamos la función checkAnswer:
+
+```html
+<PokemonOptions :options="pokemonOptions" @selected-option="checkAnswer"/>
+```
+
+Deshabilitaremos ahora los botones para que no se puedan pulsar cuando el usuario pierda o gane:
+
+pokemonOptions:
+
+```ts
+interface Props {
+  options: Pokemon[],
+  blockSelection: boolean;
+}
+```
+
+```html
+<button v-for="{ name, id } in options" :key="id" class="capitalize"
+    @click="$emit('selectedOption', id)"
+    :disabled="blockSelection"
+    >
+      {{ name }}
+</button>
+```
+
+PokemonGame:
+
+```html
+<PokemonOptions :options="pokemonOptions" :block-selection="gameStatus !== GameStatus.Playing" @selected-option="checkAnswer"/>
+```
+
+<img src="img/reto6/img07.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Vamos a implementarle también un contador de victorias para luego:
+
+usePokemonGame:
+
+```ts
+const winCount = ref(0);
+
+const checkAnswer = (pokemonId: number) => {
+    if (pokemonId === randomPokemon.value.id) {
+      gameStatus.value = GameStatus.Won;
+      confetti({
+        particleCount: 300,
+        spread: 150,
+        origin: { y: 0.6 }
+      });
+      winCount.value++;
+    } else {
+      gameStatus.value = GameStatus.Lost;
+    }
+}
+```
+
+PokemonGame:
+```html
+<div class="text-sm mt-2">
+      Victorias: {{ winCount }}
+</div>
+```
+
+Pero antes de implementar la jugabilidad infinita, vamos a decirle al usuario perdedor la opción correcta:
+
+PokemonoOptions:
+
+```html
+<button v-for="{ name, id } in options" :key="id" class="capitalize"
+    @click="$emit('selectedOption', id)"
+    :disabled="blockSelection"
+    :class="{ 'correct': id === correctOption && blockSelection }"
+    >
+      {{ name }}
+</button>
+```
+
+```ts
+interface Props {
+  options: Pokemon[],
+  blockSelection: boolean;
+  correctOption: number;
+}
+```
+
+```css
+.correct {
+  @apply bg-green-600;
+}
+```
+
+PokemonGame:
+
+```html
+<PokemonOptions :options="pokemonOptions" :correct-option="randomPokemon.id"
+    :block-selection="gameStatus !== GameStatus.Playing" @selected-option="checkAnswer"/>
+```
+
+<img src="img/reto6/img08.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Se propone poder hacer restart a la partida, pero en lugar de eso vamos a hacer que el juego dure para siempre. Para ello hay que hacer un par de cambios:
+
+```ts
+const checkAnswer = (pokemonId: number) => {
+    if (pokemonId === randomPokemon.value.id) {
+      gameStatus.value = GameStatus.Won;
+      confetti({
+        particleCount: 300,
+        spread: 150,
+        origin: { y: 0.6 }
+      });
+      winCount.value++;
+    } else {
+      gameStatus.value = GameStatus.Lost;
+    }
+
+    setTimeout(() => {
+      restartGame();
+    }, 5000);
+  }
+
+  const restartGame = async () => {
+    gameStatus.value = GameStatus.Playing;
+    pokemonList.value = await getPokemon();
+    getNextOptions();
+  }
+```
+
+Mentira, esto es todo lo que hay que cambiar. Le damos 5 segundos al jugador para que sepa que ha perdido o ganado y luego se reinicia el juego, manteniendo el contador de victorias.
+
+<img src="img/reto6/img09.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Como se observa, se mantiene el contador. Por último, vamos a ponerle un contador para que el jugador sepa cuánto queda para el reinicio:
+
+```ts
+  const startTimer = () => {
+    restartCounter.value = 5;
+    const timer = setInterval(() => {
+      restartCounter.value--;
+      if (restartCounter.value === 0) {
+        clearInterval(timer);
+      }
+    }, 1000);
+  }
+
+  const checkAnswer = (pokemonId: number) => {
+    if (pokemonId === randomPokemon.value.id) {
+      gameStatus.value = GameStatus.Won;
+      confetti({
+        particleCount: 300,
+        spread: 150,
+        origin: { y: 0.6 }
+      });
+      winCount.value++;
+    } else {
+      gameStatus.value = GameStatus.Lost;
+    }
+
+    startTimer();
+
+    setTimeout(() => {
+      restartGame();
+    }, 5000);
+  }
+```
+
+Y ahora hay que mostrarlo en PokemonGame:
+
+```html
+<h3 class="mt-2">
+      {{ gameStatus === GameStatus.Playing ? 'Adivina el Pokémon' : 'Intentalo de nuevo en: ' + restartCounter }}
+</h3>
+```
+
+<img src="img/reto6/img10.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Y con eso, hemos acabado el último reto.
+
+### Reto final: ???
+
+Espera un momento, se supone que hemos acabado.
+
+<img src="img/retofinal/img01.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+No me lo creo.
+
+Ahora lo recuerdo todo.
+
+<img src="img/retofinal/img02.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+El chiste ya perdió gracia.
 
 </div>
