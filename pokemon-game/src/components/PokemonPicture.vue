@@ -1,13 +1,24 @@
 <template>
 
-  <img v-bind:src="imgUrl" class="brightness-0 h-[200px]" alt="Volcarona"/>
+  <img v-if="!showPokemon" v-bind:src="pkmnImage" class="brightness-0 h-[200px]" alt="pokemon"/>
+
+  <img v-else v-bind:src="pkmnImage" class="fade-in h-[200px]" alt="pokemon"/>
 
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
+import { computed, ref } from 'vue';
+  interface Props {
+    pokemonId: number;
+    showPokemon?: boolean;
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    showPokemon: false
+  });
 
-  const imgUrl = ref('https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/637.png');
+  const pkmnImage = computed(() =>
+    `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${props.pokemonId}.png`
+  );
 
 </script>
 
