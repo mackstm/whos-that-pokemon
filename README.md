@@ -10,6 +10,7 @@
 - [Reto 2](#index03)
 - [Reto 3](#index04)
 - [Reto 4](#index05)
+- [Reto 5](#index06)
 
 ### Descripción <a name="index01"></a>
 
@@ -415,5 +416,74 @@ export function usePokemonGame() {
 
 Reto 4 completado!
 
+### Reto 5: Modificando método getPokemon() <a name="index06"></a>
+
+Hay una cosa que comentamos en el anterior reto que nunca hemos resuelto realmente: solo necesitamos el nombre y la ID del Pokémon. Vamos a modificar el metodo getPokemon para que nos devuelva solo esos datos.
+
+Creamos un archivo pokemon.interface.ts en la carpeta de interfaces:
+
+```ts
+export interface Pokemon {
+  id: number;
+  name: string;
+}
+```
+
+Y realizamos las modificaciones pertinentes en usePokemonGame:
+
+```ts
+export function usePokemonGame() {
+  const gameStatus = ref<GameStatus>(GameStatus.Playing);
+
+  const getPokemon = async () => {
+    const response = await pokemonApi.get<PokemonListResponse>('?offset=493&limit=156');
+
+    const pokemonArray = response.data.results.map( (pokemon: PokeInfo) => {
+      const urlParts = pokemon.url.split('/');
+      const id = urlParts[urlParts.length - 2];
+      return {
+        id: +id,
+        name: pokemon.name
+      }
+    })
+
+    return pokemonArray;
+
+  }
+
+  onMounted(async () => {
+    const pokemonList = await getPokemon();
+    console.log(pokemonList);
+  })
+```
+
+Simplemente estamos metiendo cada trozo de la URL en un array que nos da el resultado y cogiendo el penúltimo elemento, que es justamente el número de la Pokédex del Pokémon (la ID). Ahora en la consola vemos:
+
+<img src="img/reto5/img01.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Perfecto. Ahora será más facil encontrar lo que estoy buscando. No podré dormir tranquilo hasta que recupere lo que había detrás de la silueta.
+
+La lista la queremos desordenada, así que hacemos una última modificación a getPokemon para reordenarla de manera aleatoria:
+
+```ts
+pokemonArray = pokemonArray.sort(() => 0.5 - Math.random());
+```
+
+Esto funciona porque porque sort decide el orden basado en si el número que se le pasa es positivo o negativo. Math.random() genera un número entre 0 y 1, entonces si le restamos 0.5, el resultado es positivo o negativo, y sort lo ordena de manera aleatoria. Sin embargo, no es la mejor forma de hacer un sort, puesto que está matemáticamente demostrado que tiene ciertas tendencias y en cuanto a eficiencia no es lo mejor (la complejidad es O(n log n)). En cambio, el algoritmo Fisher-Yates nos ofrece completa aletoriedad y eficiencia (complejidad O(n)).
+
+```ts
+  const shufflePokemon = (pokemonArray: Pokemon[]) => {
+    for (let i = pokemonArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pokemonArray[i], pokemonArray[j]] = [pokemonArray[j], pokemonArray[i]];
+    }
+  }
+```
+
+Ahora comprobemos si es aleatorio:
+
+<img src="img/reto5/img02.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Efectivamente.
 
 </div>
