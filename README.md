@@ -270,6 +270,150 @@ export enum GameStatus {
 }
 ```
 
+En la misma carpeta nos hacemos un index.ts que nos servirá de archivo de barril, es decir, un archivo donde podemos exportar varios archivos y hacer solo un import de varios ficheros con un solo path, quedando el código más limpio. 
+
+```ts
+import { GameStatus } from "@/modules/pokemon/interfaces";
+import { ref } from "vue";
+
+export function usePokemonGame() {
+  const gameStatus = ref<GameStatus>(GameStatus.Playing);
+
+  return {
+    gameStatus,
+  }
+}
+```
+
+Ahora creamos la carpeta api dentro de la de pokemon y un archivo pokemonApi.ts para hacer las llamadas pertinentes a la api mediante Axios, una librería de javascript que ofrece más comodidad que un simple fetch a la hora de hacer peticiones HTTP, ya que axios nos transforma automáticamente los datos de la respuesta parseada en un json. Lo hemos usado antes en React y React-Native.
+
+Podríamos limitarnos a los primeros 151 Pokémon, pero me da que esa silueta de antes no está entre ellos, así que vamos a limitarlo a la quinta generación. Me da la sensación de que ahí encontraré mi respuesta. ¿Cuál es ese Pokémon? Para limitar los pokémon que nos escupe la api, utilizamos el siguiente enlace= https://pokeapi.co/api/v2/pokemon?offset=493&limit=156. Este enlace nos devuelve los pokémon de la quinta generación.
+
+```ts
+import axios from "axios";
+
+const pokemonApi = {
+  get: get
+}
+async function get(limiter: string): Promise<any> {
+  try {
+    const response = await axios.get('https://pokeapi.co/api/v2/pokemon' + limiter);
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export default pokemonApi;
+
+```
+
+Entonces lo usamos en usePokemonGame:
+
+```ts
+import pokemonApi from "@/modules/pokemon/api/pokemonApi";
+import { GameStatus } from "@/modules/pokemon/interfaces";
+import { onMounted, ref } from "vue";
+
+export function usePokemonGame() {
+  const gameStatus = ref<GameStatus>(GameStatus.Playing);
+
+  const getPokemon = async () => {
+    const response = await pokemonApi.get('?offset=493&limit=156');
+    console.log(response.data)
+  }
+
+  onMounted(() => {
+    getPokemon();
+  })
+
+  return {
+    gameStatus,
+  }
+}
+```
+
+Vamos a usarlo en PokemonGame.vue para comprobar que funciona.
+
+```html
+<script setup lang="ts">
+import PokemonOptions from '@/components/PokemonOptions.vue';
+import PokemonPicture from '@/components/PokemonPicture.vue';
+import { usePokemonGame } from '@/composables/usePokemonGame';
+
+const { gameStatus } = usePokemonGame();
+</script>
+```
+
+<img src="img/reto4/img02.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+Esto es bueno para nosotros, pero esta lista nos está dando datos que no queremos. Solo nos interesan la ID y el nombre, así que vamos a hacernos un tipado estricto en el archivo pokemon-list.response.ts que crearemos en la carpeta de interfaces. Usaremos json to ts para generar el type:
+
+```ts
+interface PokemonListResponse {
+  count: number;
+  next: string;
+  previous: string;
+  results: PokeInfo[];
+}
+
+interface PokeInfo {
+  name: string;
+  url: string;
+}
+```
+
+Ahora nos aseguramos de usar el tipo en pokemonApi y usePokemonGame:
+
+pokemonApi:
+```ts
+import axios from "axios";
+
+const pokemonApi = {
+  get: get
+}
+async function get<T>(limiter: string): Promise<any> {
+  try {
+    const response: T = await axios.get('https://pokeapi.co/api/v2/pokemon' + limiter);
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export default pokemonApi;
+```
+
+usePokemonGame:
+```ts
+import pokemonApi from "@/modules/pokemon/api/pokemonApi";
+import { GameStatus } from "@/modules/pokemon/interfaces";
+import { onMounted, ref } from "vue";
+
+export function usePokemonGame() {
+  const gameStatus = ref<GameStatus>(GameStatus.Playing);
+
+  const getPokemon = async () => {
+    const response = await pokemonApi.get<PokemonListResponse>('?offset=493&limit=156');
+    console.log(response.data.results)
+  }
+
+  onMounted(() => {
+    getPokemon();
+  })
+
+  return {
+    gameStatus,
+  }
+}
+```
+
+<img src="img/reto4/img03.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+<img src="img/reto4/img04.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
+
+¿Creen que la silueta de antes es uno de esos Pokémon de la imagen? Si tan solo supiera.
+
+Reto 4 completado!
 
 
 </div>
