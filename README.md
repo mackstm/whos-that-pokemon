@@ -974,6 +974,8 @@ Ahora lo recuerdo todo.
 
 <img src="img/retofinal/img02.png" alt="Comprobamos" style="display: block; margin: 0 auto"/>
 
-El chiste ya perdió gracia.
+Por fin te encuentro.
+
+Verdaderamente este fue mi ¿Cuál es ese Pokémon?
 
 </div>
